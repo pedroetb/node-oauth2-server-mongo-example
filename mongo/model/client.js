@@ -1,3 +1,7 @@
-var modelBuilder = require('./_builder');
+var mongoose = require('mongoose'),
+	modelName = 'client',
+	schemaDefinition = require('../schema/' + modelName),
+	schemaInstance = mongoose.Schema(schemaDefinition),
+	modelInstance = mongoose.model(modelName, schemaInstance);
 
-module.exports = modelBuilder.getModelInstance('client');
+module.exports = modelInstance;
