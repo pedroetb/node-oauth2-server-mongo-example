@@ -1,6 +1,8 @@
-# node-oauth2-server example
+# node-oauth2-server with MongoDB example
 
 This is a basic example of a OAuth2 server, using [node-oauth2-server](https://github.com/oauthjs/node-oauth2-server) with MongoDB storage and the minimum (only the required to work) model configuration.
+
+If you want a simpler example without MongoDB storage, you should go to [node-oauth2-server-example](https://github.com/pedroetb/node-oauth2-server-example) instead.
 
 ## Setup
 
