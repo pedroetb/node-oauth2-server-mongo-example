@@ -12,6 +12,8 @@ You also need to install **nodejs** and **npm** and then, simply run `npm instal
 
 ## Usage
 
+### Checking example data
+
 Firstly, you should create some entries in your **MongoDB** database.
 
 You need to add a client. For example:
@@ -26,25 +28,25 @@ And you have to add a user too. For example:
 
 > You can call the `loadExampleData` function at `model.js`in order to create these entries automatically.
 
-### Obtain a token
+### Obtaining a token
 
-To obtain a token you should POST to `http://localhost:3000/oauth/token`, including the client credentials in the headers and the user credentials in the request body:
+To obtain a token you should POST to `http://localhost:3000/oauth/token`, including the client credentials in request headers and the user credentials and grant type in request body:
 
 * **Headers**
-    * **Authorization**: `"Basic " + clientId:secret base64'd`
-        * (for example, to use `application:secret`, you should send `Basic YXBwbGljYXRpb246c2VjcmV0`)
+	* **Authorization**: `"Basic " + clientId:secret base64'd`
+		* (for example, to use `application:secret`, you should send `Basic YXBwbGljYXRpb246c2VjcmV0`)
 
-    * **Content-Type**: `application/x-www-form-urlencoded`
+	* **Content-Type**: `application/x-www-form-urlencoded`
 * **Body**
-    * `grant_type=password&username=pedroetb&password=password`
+	* `grant_type=password&username=pedroetb&password=password`
 
 If all goes as planned, you should receive a response like this:
 
 ```
 {
-    "token_type": "bearer",
-    "access_token": "72ab415822b56cf0f9f93f07fe978d9aae859325",
-    "expires_in": 3600
+	"token_type": "bearer",
+	"access_token": "72ab415822b56cf0f9f93f07fe978d9aae859325",
+	"expires_in": 3600
 }
 ```
 
@@ -53,5 +55,5 @@ If all goes as planned, you should receive a response like this:
 Now, you can use your brand-new token to access restricted areas. For example, you can GET to `http://localhost:3000/` including your token at headers:
 
 * **Headers**
-    * **Authorization**: `"Bearer " + access_token`
-        * (for example, `Bearer 72ab415822b56cf0f9f93f07fe978d9aae859325`)
+	* **Authorization**: `"Bearer " + access_token`
+		* (for example, `Bearer 72ab415822b56cf0f9f93f07fe978d9aae859325`)
