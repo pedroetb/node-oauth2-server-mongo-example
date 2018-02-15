@@ -26,7 +26,7 @@ And you have to add a user too. For example:
 * **username**: `pedroetb`
 * **password**: `password`
 
-> You can call the `loadExampleData` function at `model.js`in order to create these entries automatically.
+> You can call the `loadExampleData` function at `model.js` in order to create these entries automatically.
 
 ### Obtaining a token
 
@@ -40,6 +40,16 @@ To obtain a token you should POST to `http://localhost:3000/oauth/token`, includ
 * **Body**
 	* `grant_type=password&username=pedroetb&password=password`
 		* (contains 3 parameters: `grant_type`, `username` and `password`)
+
+For example, using `curl`:
+```
+curl http://localhost:3000/oauth/token \
+  -d "grant_type=password" \
+  -d "username=pedroetb" \
+  -d "password=password" \
+  -H "Authorization: Basic YXBwbGljYXRpb246c2VjcmV0" \
+  -H "Content-Type: application/x-www-form-urlencoded"
+```
 
 If all goes as planned, you should receive a response like this:
 
@@ -58,3 +68,9 @@ Now, you can use your brand-new token to access restricted areas. For example, y
 * **Headers**
 	* **Authorization**: `"Bearer " + access_token`
 		* (for example, `Bearer 72ab415822b56cf0f9f93f07fe978d9aae859325`)
+
+For example, using `curl`:
+```
+curl http://localhost:3000 \
+  -H "Authorization: Bearer 72ab415822b56cf0f9f93f07fe978d9aae859325"
+```
