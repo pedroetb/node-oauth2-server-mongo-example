@@ -121,7 +121,7 @@ var saveToken = function(token, client, user) {
 	};
 
 	token.user = {
-		id: user.username
+		id: user.username || user.clientId
 	};
 
 	var tokenInstance = new tokenModel(token);

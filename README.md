@@ -114,7 +114,9 @@ If all goes as planned, you should receive a response like this:
 	"client": {
 		"id": "confidentialApplication"
 	},
-	"user": {}
+	"user": {
+		"id": "confidentialApplication"
+	}
 }
 ```
 
