@@ -13,7 +13,10 @@ app.use(bodyParser.json());
 
 var mongoUri = 'mongodb://localhost/oauth';
 
-mongoose.connect(mongoUri, function(err, res) {
+mongoose.connect(mongoUri, {
+	useCreateIndex: true,
+	useNewUrlParser: true
+}, function(err, res) {
 
 	if (err) {
 		return console.error('Error connecting to "%s":', mongoUri, err);
