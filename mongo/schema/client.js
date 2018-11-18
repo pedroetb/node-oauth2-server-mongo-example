@@ -1,4 +1,6 @@
 module.exports = {
 	clientId: String,
-	clientSecret: String
+	clientSecret: String,
+	grants: [String],
+	redirectUris: [String]
 };

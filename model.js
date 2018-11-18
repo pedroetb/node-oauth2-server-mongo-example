@@ -14,9 +14,23 @@ var clientModel = require('./mongo/model/client'),
 
 var loadExampleData = function() {
 
-	var client = new clientModel({
+	var client1 = new clientModel({
 		clientId: 'application',
-		clientSecret: 'secret'
+		clientSecret: 'secret',
+		grants: [
+			'password'
+		],
+		redirectUris: []
+	});
+
+	var client2 = new clientModel({
+		clientId: 'confidentialApplication',
+		clientSecret: 'topSecret',
+		grants: [
+			'password',
+			'client_credentials'
+		],
+		redirectUris: []
 	});
 
 	var user = new userModel({
@@ -25,7 +39,7 @@ var loadExampleData = function() {
 		password: 'password'
 	});
 
-	client.save(function(err, client) {
+	client1.save(function(err, client) {
 
 		if (err) {
 			return console.error(err);
@@ -39,6 +53,14 @@ var loadExampleData = function() {
 			return console.error(err);
 		}
 		console.log('Created user', user);
+	});
+
+	client2.save(function(err, client) {
+
+		if (err) {
+			return console.error(err);
+		}
+		console.log('Created client', client);
 	});
 };
 
@@ -74,63 +96,64 @@ var dump = function() {
 };
 
 /*
- * Get access token.
+ * Methods used by all grant types.
  */
 
-var getAccessToken = function(bearerToken, callback) {
+var getAccessToken = function(token) {
 
-	tokenModel.findOne({
-		accessToken: bearerToken
-	}, callback);
+	return tokenModel.findOne({
+		accessToken: token
+	});
 };
 
-/**
- * Get client.
- */
+var getClient = function(clientId, clientSecret) {
 
-var getClient = function(clientId, clientSecret, callback) {
-
-	clientModel.findOne({
+	return clientModel.findOne({
 		clientId: clientId,
 		clientSecret: clientSecret
-	}, callback);
-};
-
-/**
- * Grant type allowed.
- */
-
-var grantTypeAllowed = function(clientId, grantType, callback) {
-
-	callback(false, grantType === "password");
-};
-
-/**
- * Save token.
- */
-
-var saveAccessToken = function(accessToken, clientId, expires, user, callback) {
-
-	var token = new tokenModel({
-		accessToken: accessToken,
-		expires: expires,
-		clientId: clientId,
-		user: user
 	});
+};
 
-	token.save(callback);
+var saveToken = function(token, client, user) {
+
+	token.client = {
+		id: client.clientId
+	};
+
+	token.user = {
+		id: user.username
+	};
+
+	var tokenInstance = new tokenModel(token);
+
+	tokenInstance.save();
+
+	return token;
 };
 
 /*
- * Get user.
+ * Method used only by password grant type.
  */
 
-var getUser = function(username, password, callback) {
+var getUser = function(username, password) {
 
-	userModel.findOne({
+	return userModel.findOne({
 		username: username,
 		password: password
-	}, callback);
+	});
+};
+
+/*
+ * Method used only by client_credentials grant type.
+ */
+
+var getUserFromClient = function(client) {
+
+	return clientModel.findOne({
+		clientId: client.clientId,
+		clientSecret: client.clientSecret,
+		grants: 'client_credentials'
+	});
 };
 
 /**
@@ -140,7 +163,7 @@ var getUser = function(username, password, callback) {
 module.exports = {
 	getAccessToken: getAccessToken,
 	getClient: getClient,
-	grantTypeAllowed: grantTypeAllowed,
-	saveAccessToken: saveAccessToken,
-	getUser: getUser
+	saveToken: saveToken,
+	getUser: getUser,
+	getUserFromClient: getUserFromClient
 };

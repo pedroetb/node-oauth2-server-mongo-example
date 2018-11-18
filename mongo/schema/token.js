@@ -1,8 +1,8 @@
-var userSchema = require('./user');
-
 module.exports = {
 	accessToken: String,
-	expires: Date,
-	clientId: String,
-	user: userSchema
+	accessTokenExpiresAt: Date,
+	refreshToken: String,
+	refreshTokenExpiresAt: Date,
+	client: Object,
+	user: Object
 };
