@@ -1,6 +1,6 @@
 {
   "name": "node-oauth2-server-mongo-example",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Working oauth2 server with MongoDB and minimal configuration",
   "repository": {
     "type": "git",
