@@ -2,14 +2,18 @@
   "name": "node-oauth2-server-mongo-example",
   "version": "1.2.0",
   "description": "Working oauth2 server with MongoDB and minimal configuration",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pedroetb/node-oauth2-server-mongo-example"
-  },
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js"
-  },
+  "keywords": [
+    "oauth2-server",
+    "oauth2",
+    "oauth",
+    "mongodb-storage",
+    "mongodb",
+    "grant",
+    "password",
+    "client-credentials"
+  ],
+  "homepage": "https://github.com/pedroetb/node-oauth2-server-mongo-example",
+  "license": "MIT",
   "author": "Pedro Trujillo",
   "contributors": [
     {
@@ -17,11 +21,22 @@
       "email": "pedroetb@gmail.com"
     }
   ],
-  "license": "MIT",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pedroetb/node-oauth2-server-mongo-example.git"
+  },
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
-    "mongoose": "^5.3.12",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.6.5",
     "oauth2-server": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=4.0.0",
+    "npm": ">=2.14.2"
   }
 }
