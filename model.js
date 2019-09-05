@@ -1,67 +1,58 @@
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
 /**
  * Configuration.
  */
 
-var clientModel = require('./mongo/model/client'),
-	tokenModel = require('./mongo/model/token'),
-	userModel = require('./mongo/model/user');
+var clientModel = require("./mongo/model/client"),
+  tokenModel = require("./mongo/model/token"),
+  userModel = require("./mongo/model/user");
 
 /**
  * Add example client and user to the database (for debug).
  */
 
 var loadExampleData = function() {
+  var client1 = new clientModel({
+    clientId: "application",
+    clientSecret: "secret",
+    grants: ["password", "refresh_token"],
+    redirectUris: []
+  });
 
-	var client1 = new clientModel({
-		clientId: 'application',
-		clientSecret: 'secret',
-		grants: [
-			'password'
-		],
-		redirectUris: []
-	});
+  var client2 = new clientModel({
+    clientId: "confidentialApplication",
+    clientSecret: "topSecret",
+    grants: ["password", "client_credentials"],
+    redirectUris: []
+  });
 
-	var client2 = new clientModel({
-		clientId: 'confidentialApplication',
-		clientSecret: 'topSecret',
-		grants: [
-			'password',
-			'client_credentials'
-		],
-		redirectUris: []
-	});
+  var user = new userModel({
+    id: "123",
+    username: "pedroetb",
+    password: "password"
+  });
 
-	var user = new userModel({
-		id: '123',
-		username: 'pedroetb',
-		password: 'password'
-	});
+  client1.save(function(err, client) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("Created client", client);
+  });
 
-	client1.save(function(err, client) {
+  user.save(function(err, user) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("Created user", user);
+  });
 
-		if (err) {
-			return console.error(err);
-		}
-		console.log('Created client', client);
-	});
-
-	user.save(function(err, user) {
-
-		if (err) {
-			return console.error(err);
-		}
-		console.log('Created user', user);
-	});
-
-	client2.save(function(err, client) {
-
-		if (err) {
-			return console.error(err);
-		}
-		console.log('Created client', client);
-	});
+  client2.save(function(err, client) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("Created client", client);
+  });
 };
 
 /**
@@ -69,30 +60,26 @@ var loadExampleData = function() {
  */
 
 var dump = function() {
+  clientModel.find(function(err, clients) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("clients", clients);
+  });
 
-	clientModel.find(function(err, clients) {
+  tokenModel.find(function(err, tokens) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("tokens", tokens);
+  });
 
-		if (err) {
-			return console.error(err);
-		}
-		console.log('clients', clients);
-	});
-
-	tokenModel.find(function(err, tokens) {
-
-		if (err) {
-			return console.error(err);
-		}
-		console.log('tokens', tokens);
-	});
-
-	userModel.find(function(err, users) {
-
-		if (err) {
-			return console.error(err);
-		}
-		console.log('users', users);
-	});
+  userModel.find(function(err, users) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log("users", users);
+  });
 };
 
 /*
@@ -100,35 +87,32 @@ var dump = function() {
  */
 
 var getAccessToken = function(token) {
-
-	return tokenModel.findOne({
-		accessToken: token
-	});
+  return tokenModel.findOne({
+    accessToken: token
+  });
 };
 
 var getClient = function(clientId, clientSecret) {
-
-	return clientModel.findOne({
-		clientId: clientId,
-		clientSecret: clientSecret
-	});
+  return clientModel.findOne({
+    clientId: clientId,
+    clientSecret: clientSecret
+  });
 };
 
 var saveToken = function(token, client, user) {
+  token.client = {
+    id: client.id
+  };
 
-	token.client = {
-		id: client.clientId
-	};
+  token.user = {
+    id: user.username || user.clientId
+  };
 
-	token.user = {
-		id: user.username || user.clientId
-	};
+  var tokenInstance = new tokenModel(token);
 
-	var tokenInstance = new tokenModel(token);
+  tokenInstance.save();
 
-	tokenInstance.save();
-
-	return token;
+  return token;
 };
 
 /*
@@ -136,11 +120,10 @@ var saveToken = function(token, client, user) {
  */
 
 var getUser = function(username, password) {
-
-	return userModel.findOne({
-		username: username,
-		password: password
-	});
+  return userModel.findOne({
+    username: username,
+    password: password
+  });
 };
 
 /*
@@ -148,12 +131,52 @@ var getUser = function(username, password) {
  */
 
 var getUserFromClient = function(client) {
+  return clientModel.findOne({
+    clientId: client.clientId,
+    clientSecret: client.clientSecret,
+    grants: "client_credentials"
+  });
+};
 
-	return clientModel.findOne({
-		clientId: client.clientId,
-		clientSecret: client.clientSecret,
-		grants: 'client_credentials'
-	});
+/*
+ * Methods used only by refresh_token grant type.
+ */
+
+var getRefreshToken = async function(refreshToken) {
+  token = await tokenModel
+    .findOne({
+      refreshToken: refreshToken
+    })
+    .then(token => {
+      return token;
+    })
+    .catch(err => {
+      console.error(err);
+      return;
+    });
+
+  if (token === null) {
+    return;
+  }
+
+  token.user.username = token.user.id;
+
+  return token;
+};
+
+var revokeToken = async function(token) {
+  let result = await tokenModel
+    .deleteOne({
+      refreshToken: token.refreshToken
+    })
+    .then(() => {
+      return true;
+    })
+    .catch(err => {
+      console.error(err);
+      return false;
+    });
+  return result;
 };
 
 /**
@@ -161,9 +184,11 @@ var getUserFromClient = function(client) {
  */
 
 module.exports = {
-	getAccessToken: getAccessToken,
-	getClient: getClient,
-	saveToken: saveToken,
-	getUser: getUser,
-	getUserFromClient: getUserFromClient
+  getAccessToken: getAccessToken,
+  getClient: getClient,
+  saveToken: saveToken,
+  getUser: getUser,
+  getUserFromClient: getUserFromClient,
+  getRefreshToken: getRefreshToken,
+  revokeToken: revokeToken
 };
