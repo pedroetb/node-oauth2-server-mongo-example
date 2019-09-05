@@ -77,7 +77,7 @@ If all goes as planned, you should receive a response like this:
 	"refreshToken": "67c8300ad53efa493c2278acf12d92bdb71832f9",
 	"refreshTokenExpiresAt": "2018-12-02T15:18:25.852Z",
 	"client": {
-		"id": "application"
+		"id": "5d6deceea821dd28082f93ee"
 	},
 	"user": {
 		"id": "pedroetb"
@@ -112,7 +112,7 @@ If all goes as planned, you should receive a response like this:
 	"accessToken": "951d6f603c2ce322c5def00ce58952ed2d096a72",
 	"accessTokenExpiresAt": "2018-11-18T16:18:25.852Z",
 	"client": {
-		"id": "confidentialApplication"
+		"id": "5d6deceea821dd28082f93ef"
 	},
 	"user": {
 		"id": "confidentialApplication"
@@ -170,7 +170,7 @@ If all goes as planned, you should receive a response like this:
 	"refreshToken": "37eaff895c8fc9fc839c0098cf3fb01858097908",
 	"refreshTokenExpiresAt": "2018-12-02T15:18:35.248Z",
 	"client": {
-		"id": "application"
+		"id": "5d6deceea821dd28082f93ee"
 	},
 	"user": {
 		"id": "pedroetb"
