@@ -101,61 +101,99 @@ var dump = function() {
  * Methods used by all grant types.
  */
 
-var getAccessToken = function(token) {
+var getAccessToken = function(token, callback) {
 
-	return tokenModel.findOne({
+	tokenModel.findOne({
 		accessToken: token
-	});
+	}).lean().exec((function(callback, err, token) {
+
+		if (!token) {
+			console.error('Token not found');
+		}
+
+		callback(err, token);
+	}).bind(null, callback));
 };
 
-var getClient = function(clientId, clientSecret) {
+var getClient = function(clientId, clientSecret, callback) {
 
-	return clientModel.findOne({
+	clientModel.findOne({
 		clientId: clientId,
 		clientSecret: clientSecret
-	});
+	}).lean().exec((function(callback, err, client) {
+
+		if (!client) {
+			console.error('Client not found');
+		}
+
+		callback(err, client);
+	}).bind(null, callback));
 };
 
-var saveToken = function(token, client, user) {
+var saveToken = function(token, client, user, callback) {
 
 	token.client = {
 		id: client.clientId
 	};
 
 	token.user = {
-		id: user.username || user.clientId
+		username: user.username
 	};
 
 	var tokenInstance = new tokenModel(token);
+	tokenInstance.save((function(callback, err, token) {
 
-	tokenInstance.save();
+		if (!token) {
+			console.error('Token not saved');
+		} else {
+			token = token.toObject();
+			delete token._id;
+			delete token.__v;
+		}
 
-	return token;
+		callback(err, token);
+	}).bind(null, callback));
 };
 
 /*
  * Method used only by password grant type.
  */
 
-var getUser = function(username, password) {
+var getUser = function(username, password, callback) {
 
-	return userModel.findOne({
+	userModel.findOne({
 		username: username,
 		password: password
-	});
+	}).lean().exec((function(callback, err, user) {
+
+		if (!user) {
+			console.error('User not found');
+		}
+
+		callback(err, user);
+	}).bind(null, callback));
 };
 
 /*
  * Method used only by client_credentials grant type.
  */
 
-var getUserFromClient = function(client) {
+var getUserFromClient = function(client, callback) {
 
-	return clientModel.findOne({
+	clientModel.findOne({
 		clientId: client.clientId,
 		clientSecret: client.clientSecret,
 		grants: 'client_credentials'
-	});
+	}).lean().exec((function(callback, err, client) {
+
+		if (!client) {
+			console.error('Client not found');
+		}
+
+		callback(err, {
+			username: ''
+		});
+	}).bind(null, callback));
 };
 
 /*
@@ -169,12 +207,7 @@ var getRefreshToken = function(refreshToken, callback) {
 	}).lean().exec((function(callback, err, token) {
 
 		if (!token) {
-			if (!err) {
-				err = 'Token not found';
-			}
-			console.error(err);
-		} else {
-			token.user.username = token.user.id;
+			console.error('Token not found');
 		}
 
 		callback(err, token);
@@ -187,13 +220,10 @@ var revokeToken = function(token, callback) {
 		refreshToken: token.refreshToken
 	}).exec((function(callback, err, results) {
 
-		var deleteSuccess = results.deletedCount === 1;
+		var deleteSuccess = results && results.deletedCount === 1;
 
 		if (!deleteSuccess) {
-			if (!err) {
-				err = 'Token not deleted';
-			}
-			console.error(err);
+			console.error('Token not deleted');
 		}
 
 		callback(err, deleteSuccess);
