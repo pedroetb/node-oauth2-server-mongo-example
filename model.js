@@ -36,7 +36,6 @@ var loadExampleData = function() {
 	});
 
 	var user = new userModel({
-		id: '123',
 		username: 'pedroetb',
 		password: 'password'
 	});
